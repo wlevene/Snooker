@@ -11,6 +11,7 @@ import { AimGuideRenderer } from './renderer/aimGuide.js';
 import { Interaction } from './ui/interaction.js';
 import { Controls } from './ui/controls.js';
 import { BallReferenceManager } from './ui/ballReference.js';
+import { FavoritesManager } from './ui/favorites.js';
 
 class SnookerApp {
   constructor() {
@@ -30,6 +31,7 @@ class SnookerApp {
     this.interaction = null;
     this.controls = null;
     this.ballReferenceManager = null;
+    this.favoritesManager = null;
 
     this.init();
   }
@@ -152,6 +154,9 @@ class SnookerApp {
 
     // 初始化球形参考管理器
     this.ballReferenceManager = new BallReferenceManager();
+
+    // 初始化收藏管理器
+    this.favoritesManager = new FavoritesManager(this.config, this.state);
 
     // 监听状态变化，触发重新渲染
     this.state.addListener(() => {

@@ -6,10 +6,14 @@ export class BallReferenceManager {
   constructor() {
     this.references = [];
     this.storageKey = 'snooker-ball-references';
+    this.currentTab = 'reference'; // 'reference' 或 'favorites'
 
     this.elements = {
       list: null,
-      addBtn: null
+      addBtn: null,
+      tabButtons: null,
+      referenceTab: null,
+      favoritesTab: null
     };
 
     this.init();
@@ -19,6 +23,9 @@ export class BallReferenceManager {
    * 初始化
    */
   init() {
+    // 创建Tab切换UI
+    this.createTabUI();
+
     // 获取DOM元素
     this.elements.list = document.getElementById('ball-reference-list');
     this.elements.addBtn = document.getElementById('add-reference-btn');
@@ -33,6 +40,103 @@ export class BallReferenceManager {
 
     // 渲染列表
     this.render();
+  }
+
+  /**
+   * 创建Tab切换UI
+   */
+  createTabUI() {
+    const header = document.querySelector('.ball-reference-header');
+    if (!header) return;
+
+    // 修改header结构，添加Tab按钮
+    const h3 = header.querySelector('h3');
+    const addBtn = header.querySelector('.add-reference-btn');
+
+    // 创建Tab容器
+    const tabContainer = document.createElement('div');
+    tabContainer.style.cssText = `
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    `;
+
+    // 创建Tab按钮
+    const referenceTab = document.createElement('button');
+    referenceTab.id = 'reference-tab';
+    referenceTab.className = 'tab-btn active';
+    referenceTab.textContent = '球形参考';
+    referenceTab.style.cssText = `
+      padding: 5px 12px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    `;
+
+    const favoritesTab = document.createElement('button');
+    favoritesTab.id = 'favorites-tab';
+    favoritesTab.className = 'tab-btn';
+    favoritesTab.textContent = '我的收藏';
+    favoritesTab.style.cssText = `
+      padding: 5px 12px;
+      background: #e0e0e0;
+      color: #666;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    `;
+
+    this.elements.referenceTab = referenceTab;
+    this.elements.favoritesTab = favoritesTab;
+
+    // Tab点击事件
+    referenceTab.addEventListener('click', () => this.switchTab('reference'));
+    favoritesTab.addEventListener('click', () => this.switchTab('favorites'));
+
+    tabContainer.appendChild(referenceTab);
+    tabContainer.appendChild(favoritesTab);
+
+    // 重新组织header结构
+    header.innerHTML = '';
+    header.appendChild(tabContainer);
+    header.appendChild(addBtn);
+  }
+
+  /**
+   * 切换Tab
+   */
+  switchTab(tab) {
+    this.currentTab = tab;
+
+    // 更新Tab样式
+    if (tab === 'reference') {
+      this.elements.referenceTab.style.background = '#667eea';
+      this.elements.referenceTab.style.color = 'white';
+      this.elements.favoritesTab.style.background = '#e0e0e0';
+      this.elements.favoritesTab.style.color = '#666';
+      this.elements.addBtn.style.display = 'block';
+    } else {
+      this.elements.referenceTab.style.background = '#e0e0e0';
+      this.elements.referenceTab.style.color = '#666';
+      this.elements.favoritesTab.style.background = '#667eea';
+      this.elements.favoritesTab.style.color = 'white';
+      this.elements.addBtn.style.display = 'none';
+    }
+
+    // 触发自定义事件，通知收藏管理器切换显示
+    const event = new CustomEvent('tabSwitch', { detail: { tab } });
+    document.dispatchEvent(event);
+
+    // 根据tab显示不同内容
+    if (tab === 'reference') {
+      this.render();
+    }
   }
 
   /**
