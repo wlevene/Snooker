@@ -72,10 +72,81 @@ export class LinesRenderer {
     const dy = y2 - y1;
     const length = Math.sqrt(dx * dx + dy * dy);
 
-    // 延长线到球桌边缘（取一个足够大的倍数）
-    const extendFactor = 10;
-    const extendedX = x1 + (dx / length) * length * extendFactor;
-    const extendedY = y1 + (dy / length) * length * extendFactor;
+    // 计算方向向量（单位向量）
+    const dirX = dx / length;
+    const dirY = dy / length;
+
+    // 计算与球桌边缘的交点
+    const tableLength = this.config.table.playingArea.length * this.scale;
+    const tableWidth = this.config.table.playingArea.width * this.scale;
+
+    // 从目标球位置开始延伸，找到与边缘的交点
+    let intersectionX, intersectionY;
+    let isRightAngle = false;
+
+    // 计算射线与四条边的交点
+    const intersections = [];
+
+    // 上边 (y = 0)
+    if (dirY < 0) {
+      const t = (0 - y2) / dirY;
+      const ix = x2 + t * dirX;
+      if (ix >= 0 && ix <= tableLength && t > 0) {
+        intersections.push({ x: ix, y: 0, edge: 'top' });
+      }
+    }
+
+    // 下边 (y = tableWidth)
+    if (dirY > 0) {
+      const t = (tableWidth - y2) / dirY;
+      const ix = x2 + t * dirX;
+      if (ix >= 0 && ix <= tableLength && t > 0) {
+        intersections.push({ x: ix, y: tableWidth, edge: 'bottom' });
+      }
+    }
+
+    // 左边 (x = 0)
+    if (dirX < 0) {
+      const t = (0 - x2) / dirX;
+      const iy = y2 + t * dirY;
+      if (iy >= 0 && iy <= tableWidth && t > 0) {
+        intersections.push({ x: 0, y: iy, edge: 'left' });
+      }
+    }
+
+    // 右边 (x = tableLength)
+    if (dirX > 0) {
+      const t = (tableLength - x2) / dirX;
+      const iy = y2 + t * dirY;
+      if (iy >= 0 && iy <= tableWidth && t > 0) {
+        intersections.push({ x: tableLength, y: iy, edge: 'right' });
+      }
+    }
+
+    // 取最近的交点
+    if (intersections.length > 0) {
+      intersections.sort((a, b) => {
+        const distA = Math.sqrt((a.x - x2) ** 2 + (a.y - y2) ** 2);
+        const distB = Math.sqrt((b.x - x2) ** 2 + (b.y - y2) ** 2);
+        return distA - distB;
+      });
+
+      const intersection = intersections[0];
+      intersectionX = intersection.x;
+      intersectionY = intersection.y;
+
+      // 判断是否为直角（穿球线垂直于边缘）
+      const angleThreshold = 2; // 允许2度误差
+      if (intersection.edge === 'top' || intersection.edge === 'bottom') {
+        // 上下边缘：垂直线的dirX应该接近0
+        const angle = Math.abs(Math.atan2(dirY, dirX) * 180 / Math.PI);
+        isRightAngle = Math.abs(angle - 90) < angleThreshold || Math.abs(angle + 90) < angleThreshold;
+      } else {
+        // 左右边缘：水平线的dirY应该接近0
+        const angle = Math.abs(Math.atan2(dirY, dirX) * 180 / Math.PI);
+        isRightAngle = Math.abs(angle) < angleThreshold || Math.abs(angle - 180) < angleThreshold;
+      }
+    }
 
     ctx.save();
     ctx.strokeStyle = this.colors.guideLine;
@@ -84,7 +155,81 @@ export class LinesRenderer {
 
     ctx.beginPath();
     ctx.moveTo(x1, y1);  // 从白球开始
-    ctx.lineTo(extendedX, extendedY);  // 延伸到球桌外
+    if (intersectionX !== undefined && intersectionY !== undefined) {
+      ctx.lineTo(intersectionX, intersectionY);  // 到交点
+    } else {
+      // 如果没有找到交点，使用原来的延长方式
+      const extendFactor = 10;
+      const extendedX = x1 + (dx / length) * length * extendFactor;
+      const extendedY = y1 + (dy / length) * length * extendFactor;
+      ctx.lineTo(extendedX, extendedY);
+    }
+    ctx.stroke();
+
+    // 绘制直角标识
+    if (isRightAngle && intersectionX !== undefined && intersectionY !== undefined) {
+      this.drawRightAngleMarker(intersectionX, intersectionY, dirX, dirY);
+    }
+
+    ctx.restore();
+  }
+
+  /**
+   * 绘制直角标识
+   */
+  drawRightAngleMarker(x, y, dirX, dirY) {
+    const ctx = this.ctx;
+    const markerSize = 15; // 直角标识的大小
+
+    ctx.save();
+    ctx.strokeStyle = '#FFD700'; // 金色
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]); // 实线
+
+    // 根据方向确定直角标识的朝向
+    // 需要画一个小L形
+    let cornerX1, cornerY1, cornerX2, cornerY2;
+
+    // 计算垂直于穿球线的方向
+    const perpX = -dirY;
+    const perpY = dirX;
+
+    // 根据碰撞边缘调整标识位置
+    const epsilon = 0.001;
+    const tableLength = this.config.table.playingArea.length * this.scale;
+    const tableWidth = this.config.table.playingArea.width * this.scale;
+
+    if (Math.abs(y) < epsilon) {
+      // 上边缘
+      cornerX1 = x - markerSize;
+      cornerY1 = y + markerSize;
+      cornerX2 = x + markerSize;
+      cornerY2 = y + markerSize;
+    } else if (Math.abs(y - tableWidth) < epsilon) {
+      // 下边缘
+      cornerX1 = x - markerSize;
+      cornerY1 = y - markerSize;
+      cornerX2 = x + markerSize;
+      cornerY2 = y - markerSize;
+    } else if (Math.abs(x) < epsilon) {
+      // 左边缘
+      cornerX1 = x + markerSize;
+      cornerY1 = y - markerSize;
+      cornerX2 = x + markerSize;
+      cornerY2 = y + markerSize;
+    } else if (Math.abs(x - tableLength) < epsilon) {
+      // 右边缘
+      cornerX1 = x - markerSize;
+      cornerY1 = y - markerSize;
+      cornerX2 = x - markerSize;
+      cornerY2 = y + markerSize;
+    }
+
+    // 绘制L形直角标识
+    ctx.beginPath();
+    ctx.moveTo(cornerX1, y);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x, cornerY1);
     ctx.stroke();
 
     ctx.restore();

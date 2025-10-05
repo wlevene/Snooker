@@ -134,22 +134,30 @@ body {
 }
 
 /* 袋口选择 */
-.pocket-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+.pocket-grid-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pocket-row {
+    display: flex;
+    justify-content: space-between;
     gap: 10px;
 }
 
 .pocket-btn {
-    padding: 10px 15px;
+    flex: 1;
+    padding: 12px 15px;
     border: 2px solid #ddd;
     background: white;
     border-radius: 6px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: #666;
     cursor: pointer;
     transition: all 0.3s ease;
+    min-width: 0;
 }
 
 .pocket-btn:hover {

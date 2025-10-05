@@ -25,8 +25,11 @@ export class AimGuideRenderer {
    * 渲染瞄准示意图
    * @param {number} angle - 当前角度（度数）
    * @param {Object} aimingData - 瞄准数据
+   * @param {Object} cueBall - 白球位置
+   * @param {Object} objectBall - 目标球位置
+   * @param {Object} pocket - 袋口位置
    */
-  render(angle, aimingData) {
+  render(angle, aimingData, cueBall, objectBall, pocket) {
     if (!this.ctx) return;
 
     const ctx = this.ctx;
@@ -53,11 +56,8 @@ export class AimGuideRenderer {
     // 绘制目标球（俯视图）
     this.drawTargetBall(centerX, centerY, radius);
 
-    // 绘制接触区域
-    this.drawContactArea(centerX, centerY, radius, angle, aimingData);
-
     // 绘制瞄准线（最后绘制，确保在最上层）
-    this.drawAimLine(centerX, centerY, radius, angle, aimingData);
+    this.drawAimLine(centerX, centerY, radius, angle, aimingData, cueBall, objectBall, pocket);
   }
 
   /**
@@ -101,47 +101,146 @@ export class AimGuideRenderer {
     ctx.stroke();
 
     ctx.setLineDash([]);
+
+    // 绘制刻度
+    this.drawScaleMarks(x, y, radius);
+  }
+
+  /**
+   * 绘制刻度标记
+   */
+  drawScaleMarks(x, y, radius) {
+    const ctx = this.ctx;
+
+    ctx.save();
+
+    // 1. 整圆圆弧刻度（4个刻度：0°, 90°, 180°, 270°）
+    ctx.strokeStyle = '#666666';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([]);
+
+    const numArcSegments = 4; // 4个刻度
+    const arcAngleStep = (2 * Math.PI) / numArcSegments;
+
+    for (let i = 0; i < numArcSegments; i++) {
+      const angle = i * arcAngleStep;
+      const tickLength = 10;
+
+      // 外侧点（球边缘）
+      const outerX = x + Math.cos(angle) * radius;
+      const outerY = y + Math.sin(angle) * radius;
+
+      // 内侧点
+      const innerX = x + Math.cos(angle) * (radius - tickLength);
+      const innerY = y + Math.sin(angle) * (radius - tickLength);
+
+      ctx.beginPath();
+      ctx.moveTo(outerX, outerY);
+      ctx.lineTo(innerX, innerY);
+      ctx.stroke();
+    }
+
+    // 2. 水平线上的刻度（左右两侧，共9个刻度：中心0，左右各4个，每半球分4段）
+    const numSideTicks = 4; // 每侧4个刻度
+    const horizontalStep = radius / numSideTicks;
+
+    // 中心点刻度（0）
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x, y - 10);
+    ctx.stroke();
+
+    // 左侧刻度（1-4）
+    for (let i = 1; i <= numSideTicks; i++) {
+      const tickX = x - i * horizontalStep;
+      const tickLength = 8;
+
+      ctx.beginPath();
+      ctx.moveTo(tickX, y);
+      ctx.lineTo(tickX, y - tickLength);
+      ctx.stroke();
+    }
+
+    // 右侧刻度（1-4）
+    for (let i = 1; i <= numSideTicks; i++) {
+      const tickX = x + i * horizontalStep;
+      const tickLength = 8;
+
+      ctx.beginPath();
+      ctx.moveTo(tickX, y);
+      ctx.lineTo(tickX, y - tickLength);
+      ctx.stroke();
+    }
+
+    // 3. 绘制数字标注
+    ctx.fillStyle = '#333333';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'top';
+
+    // 中心点标注 0
+    ctx.fillText('0', x, y + 3);
+
+    // 左侧数字标注（1-4）
+    for (let i = 1; i <= numSideTicks; i++) {
+      const tickX = x - i * horizontalStep;
+      ctx.fillText(i.toString(), tickX, y + 3);
+    }
+
+    // 右侧数字标注（1-4）
+    for (let i = 1; i <= numSideTicks; i++) {
+      const tickX = x + i * horizontalStep;
+      ctx.fillText(i.toString(), tickX, y + 3);
+    }
+
+    ctx.restore();
   }
 
   /**
    * 绘制瞄准线（红色竖线）和辅助瞄准线
    *
    * 原理：
-   * - 假设袋口在正上方（12点方向）
-   * - 白球从下方某个角度打来
-   * - 需要计算假想球（ghost ball）的球心位置
-   * - 假想球球心 = 目标球球心 - 袋口方向 * (2 * 球半径)
-   * - 然后根据角度偏移假想球位置
+   * - 根据白球、目标球、袋口的实际位置关系
+   * - 计算瞄准线应该向左还是向右偏移
+   * - 使用叉积判断方向
    */
-  drawAimLine(x, y, radius, angle, aimingData) {
+  drawAimLine(x, y, radius, angle, aimingData, cueBall, objectBall, pocket) {
     const ctx = this.ctx;
-
-    // 袋口在正上方（角度为90度，即-π/2弧度）
-    const pocketAngle = -Math.PI / 2;
 
     // 角度转弧度
     const angleRad = angle * Math.PI / 180;
 
-    // 计算假想球球心位置
-    // 假想球在袋口反方向，距离为2倍球半径
-    const ghostX = x - Math.cos(pocketAngle) * (2 * radius);
-    const ghostY = y - Math.sin(pocketAngle) * (2 * radius);
+    // 计算瞄准点偏移距离
+    const aimOffsetMagnitude = 2 * radius * Math.sin(angleRad);
 
-    // 根据角度，假想球需要偏移
-    // 使用正弦定理：瞄准点偏移 = 球半径 * sin(角度)
-    const aimOffset = 2 * radius * Math.sin(angleRad);
+    // 使用叉积判断方向
+    // 向量1: 白球 -> 目标球
+    const v1x = objectBall.x - cueBall.x;
+    const v1y = objectBall.y - cueBall.y;
 
-    // 瞄准点x坐标（向右偏移）
-    const aimX = x + aimOffset;
+    // 向量2: 目标球 -> 袋口
+    const v2x = pocket.x - objectBall.x;
+    const v2y = pocket.y - objectBall.y;
+
+    // 叉积: v1 × v2 = v1x * v2y - v1y * v2x
+    const crossProduct = v1x * v2y - v1y * v2x;
+
+    // 叉积 > 0: 袋口在穿球线右边，瞄准线向左偏
+    // 叉积 < 0: 袋口在穿球线左边，瞄准线向右偏
+    // 叉积 = 0: 直球
+    const direction = crossProduct > 0 ? -1 : 1;
+
+    // 瞄准点x坐标
+    const aimX = x + aimOffsetMagnitude * direction;
 
     const lineTop = 20;
     const lineBottom = this.canvas.height - 20;
 
-    // 球的直径（用于辅助线间距）
-    const ballDiameter = radius * 2;
+    // 半球距离（球的半径，用于辅助线间距）
+    const halfBallDistance = radius;
 
     // 绘制左侧辅助线（虚线）
-    const leftAuxX = aimX - ballDiameter;
+    const leftAuxX = aimX - halfBallDistance;
     ctx.strokeStyle = '#FF6B6B'; // 稍浅的红色
     ctx.lineWidth = 2;
     ctx.setLineDash([5, 5]); // 虚线
@@ -152,7 +251,7 @@ export class AimGuideRenderer {
     ctx.stroke();
 
     // 绘制右侧辅助线（虚线）
-    const rightAuxX = aimX + ballDiameter;
+    const rightAuxX = aimX + halfBallDistance;
     ctx.beginPath();
     ctx.moveTo(rightAuxX, lineTop);
     ctx.lineTo(rightAuxX, lineBottom);

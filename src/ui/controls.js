@@ -181,7 +181,7 @@ export class Controls {
 
     // 更新瞄准示意图
     if (this.aimGuideRenderer && state.showAimGuide) {
-      this.aimGuideRenderer.render(angle, aimingData);
+      this.aimGuideRenderer.render(angle, aimingData, state.cueBall, state.objectBall, state.selectedPocket);
     }
   }
 
