@@ -151,13 +151,11 @@ export class FavoritesManager {
     // 添加到列表
     this.favorites.push(favorite);
 
-    // 下载新的JSON文件
-    this.downloadFavoritesFile();
-
     // 重新渲染列表
     this.renderFavoritesList();
 
-    alert(`✅ 收藏成功！\n\n请将下载的 favorites.json 文件替换到项目的 public/data/ 目录，\n然后提交到Git仓库。`);
+    // 提示用户
+    alert(`✅ 收藏成功！\n\n已保存"${name}"到收藏列表。\n\n请点击"导出收藏数据"按钮下载完整的收藏列表。`);
   }
 
   /**
@@ -202,6 +200,42 @@ export class FavoritesManager {
       return;
     }
 
+    // 添加导出按钮
+    const exportBtnContainer = document.createElement('div');
+    exportBtnContainer.style.cssText = 'margin-bottom: 15px; text-align: center;';
+
+    const exportBtn = document.createElement('button');
+    exportBtn.textContent = '📥 导出收藏数据';
+    exportBtn.style.cssText = `
+      width: 100%;
+      padding: 10px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    `;
+
+    exportBtn.addEventListener('mouseover', () => {
+      exportBtn.style.transform = 'scale(1.05)';
+    });
+
+    exportBtn.addEventListener('mouseout', () => {
+      exportBtn.style.transform = 'scale(1)';
+    });
+
+    exportBtn.addEventListener('click', () => {
+      this.downloadFavoritesFile();
+      alert(`✅ 已导出 ${this.favorites.length} 个收藏！\n\n请将下载的 favorites.json 文件替换到项目的 public/data/ 目录，然后提交到Git仓库。`);
+    });
+
+    exportBtnContainer.appendChild(exportBtn);
+    listContainer.appendChild(exportBtnContainer);
+
+    // 添加收藏项
     this.favorites.forEach(favorite => {
       const item = this.createFavoriteItem(favorite);
       listContainer.appendChild(item);
@@ -339,13 +373,10 @@ export class FavoritesManager {
     if (index > -1) {
       const deleted = this.favorites.splice(index, 1)[0];
 
-      // 下载新的JSON文件
-      this.downloadFavoritesFile();
-
       // 重新渲染
       this.renderFavoritesList();
 
-      alert(`✅ 已删除"${deleted.name}"\n\n请将下载的 favorites.json 文件替换到项目的 public/data/ 目录，\n然后提交到Git仓库。`);
+      alert(`✅ 已删除"${deleted.name}"\n\n请点击"导出收藏数据"按钮下载最新的收藏列表。`);
     }
   }
 
