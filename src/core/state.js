@@ -8,16 +8,16 @@ export class State {
     this.config = config;
 
     // 球的位置
-    this.cueBall = { x: 1000, y: 1200 };
+    this.cueBall = { x: 1200, y: 1200 }; // 向右移动一点
     this.objectBall = {
-      x: 2000,
-      y: 900,
-      type: 'red',
-      locked: false
+      x: config.spotPositions.blue.x, // 蓝球位置
+      y: config.spotPositions.blue.y,
+      type: 'blue',
+      locked: true // 默认锁定
     };
 
-    // 选中的袋口
-    this.selectedPocket = config.table.pocketPositions[0]; // 默认左上角袋
+    // 选中的袋口 - 默认选择B袋（middle-top）
+    this.selectedPocket = config.table.pocketPositions.find(p => p.id === 'middle-top') || config.table.pocketPositions[0];
 
     // UI显示选项
     this.showAimingLine = config.ui.defaultSettings.showAimingLine;
@@ -28,8 +28,8 @@ export class State {
     this.showGuideLine = true; // 默认显示白球穿过目标球的辅助线
     this.showGrid = true; // 默认显示网格
 
-    // 彩球显示控制
-    this.selectedColoredBalls = 'all'; // 'all' 或具体颜色 'yellow', 'green', 'brown', 'blue', 'pink', 'black'
+    // 彩球显示控制 - 默认选中蓝球
+    this.selectedColoredBalls = 'blue';
 
     // 当前选中的预设场景
     this.currentScenario = null;

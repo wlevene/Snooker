@@ -140,6 +140,87 @@ export class AimGuideRenderer {
       ctx.stroke();
     }
 
+    // 1.5. 底部圆弧刻度（从底部中心向两侧，左右各4个刻度）
+    // 底部中心是 90度（Math.PI/2）
+    const bottomCenterAngle = Math.PI / 2;
+    const numBottomArcTicks = 4; // 每侧4个刻度
+
+    // 计算圆弧的角度范围（底部半圆，从底部中心向左右各延伸）
+    // 左侧从90度到180度，右侧从90度到0度
+    const arcRange = Math.PI / 2; // 90度范围
+    const bottomArcStep = arcRange / numBottomArcTicks;
+
+    // 底部中心刻度（0）
+    const bottomCenterX = x + Math.cos(bottomCenterAngle) * radius;
+    const bottomCenterY = y + Math.sin(bottomCenterAngle) * radius;
+    const bottomCenterInnerX = x + Math.cos(bottomCenterAngle) * (radius - 10);
+    const bottomCenterInnerY = y + Math.sin(bottomCenterAngle) * (radius - 10);
+
+    ctx.beginPath();
+    ctx.moveTo(bottomCenterX, bottomCenterY);
+    ctx.lineTo(bottomCenterInnerX, bottomCenterInnerY);
+    ctx.stroke();
+
+    // 左侧圆弧刻度（1-4）从底部向左
+    for (let i = 1; i <= numBottomArcTicks; i++) {
+      const angle = bottomCenterAngle + i * bottomArcStep;
+      const tickLength = 8;
+
+      const outerX = x + Math.cos(angle) * radius;
+      const outerY = y + Math.sin(angle) * radius;
+      const innerX = x + Math.cos(angle) * (radius - tickLength);
+      const innerY = y + Math.sin(angle) * (radius - tickLength);
+
+      ctx.beginPath();
+      ctx.moveTo(outerX, outerY);
+      ctx.lineTo(innerX, innerY);
+      ctx.stroke();
+    }
+
+    // 右侧圆弧刻度（1-4）从底部向右
+    for (let i = 1; i <= numBottomArcTicks; i++) {
+      const angle = bottomCenterAngle - i * bottomArcStep;
+      const tickLength = 8;
+
+      const outerX = x + Math.cos(angle) * radius;
+      const outerY = y + Math.sin(angle) * radius;
+      const innerX = x + Math.cos(angle) * (radius - tickLength);
+      const innerY = y + Math.sin(angle) * (radius - tickLength);
+
+      ctx.beginPath();
+      ctx.moveTo(outerX, outerY);
+      ctx.lineTo(innerX, innerY);
+      ctx.stroke();
+    }
+
+    // 绘制底部圆弧数字标注
+    ctx.fillStyle = '#333333';
+    ctx.font = 'bold 11px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // 底部中心标注 0
+    const labelRadius = radius + 12;
+    const label0X = x + Math.cos(bottomCenterAngle) * labelRadius;
+    const label0Y = y + Math.sin(bottomCenterAngle) * labelRadius;
+    ctx.fillText('0', label0X, label0Y);
+
+    // 左侧标注（1-4）
+    for (let i = 1; i <= numBottomArcTicks; i++) {
+      const angle = bottomCenterAngle + i * bottomArcStep;
+      const labelX = x + Math.cos(angle) * labelRadius;
+      const labelY = y + Math.sin(angle) * labelRadius;
+      ctx.fillText(i.toString(), labelX, labelY);
+    }
+
+    // 右侧标注（1-4）
+    for (let i = 1; i <= numBottomArcTicks; i++) {
+      const angle = bottomCenterAngle - i * bottomArcStep;
+      const labelX = x + Math.cos(angle) * labelRadius;
+      const labelY = y + Math.sin(angle) * labelRadius;
+      ctx.fillText(i.toString(), labelX, labelY);
+    }
+
     // 2. 水平线上的刻度（左右两侧，共9个刻度：中心0，左右各4个，每半球分4段）
     const numSideTicks = 4; // 每侧4个刻度
     const horizontalStep = radius / numSideTicks;
