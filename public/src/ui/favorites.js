@@ -4,6 +4,7 @@
  */
 
 import { ThumbnailGenerator } from '../renderer/thumbnail.js';
+import { Geometry } from '../core/geometry.js';
 
 export class FavoritesManager {
   constructor(config, state) {
@@ -127,6 +128,9 @@ export class FavoritesManager {
     // 生成缩略图
     const thumbnail = this.thumbnailGenerator.generate(this.state);
 
+    // 获取当前角度信息
+    const angleInfo = this.getCurrentAngleInfo();
+
     // 创建收藏对象
     const favorite = {
       id: `fav_${Date.now()}`,
@@ -140,7 +144,7 @@ export class FavoritesManager {
         x: this.state.selectedPocket.x,
         y: this.state.selectedPocket.y
       },
-      angleInfo: { ...this.state.angleInfo },
+      angleInfo: angleInfo,
       thumbnail: thumbnail
     };
 
@@ -343,5 +347,28 @@ export class FavoritesManager {
 
       alert(`✅ 已删除"${deleted.name}"\n\n请将下载的 favorites.json 文件替换到项目的 public/data/ 目录，\n然后提交到Git仓库。`);
     }
+  }
+
+  /**
+   * 获取当前角度信息
+   */
+  getCurrentAngleInfo() {
+    const angle = Geometry.calculateAimingAngle(
+      this.state.cueBall,
+      this.state.objectBall,
+      this.state.selectedPocket
+    );
+
+    const aimingData = Geometry.getAimingDataByAngle(
+      angle,
+      this.config.aimingMethod.angleData
+    );
+
+    return {
+      angle: angle.toFixed(1),
+      aimPosition: aimingData.aimPosition || "--",
+      thickness: aimingData.thickness || "--",
+      difficulty: aimingData.difficulty || "unknown"
+    };
   }
 }

@@ -17,7 +17,8 @@
       "Bash(cat:*)",
       "Bash(git rm:*)",
       "Bash(curl:*)",
-      "WebFetch(domain:snooker-tan.vercel.app)"
+      "WebFetch(domain:snooker-tan.vercel.app)",
+      "Bash(python3:*)"
     ],
     "deny": [],
     "ask": []

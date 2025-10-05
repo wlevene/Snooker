@@ -155,7 +155,7 @@ class SnookerApp {
     // 初始化球形参考管理器
     this.ballReferenceManager = new BallReferenceManager();
 
-    // 初始化收藏管理器
+    // 初始化收藏管理器（不再需要controls参数）
     this.favoritesManager = new FavoritesManager(this.config, this.state);
 
     // 监听状态变化，触发重新渲染
