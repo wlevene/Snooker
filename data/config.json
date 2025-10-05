@@ -1,0 +1,340 @@
+{
+  "name": "斯诺克角度瞄准法完整数据",
+  "version": "1.0",
+  "description": "包含标准斯诺克球桌、球的尺寸及角度瞄准法数据",
+
+  "table": {
+    "name": "标准斯诺克球桌",
+    "size": "full",
+    "dimensions": {
+      "length": 3569,
+      "width": 1778,
+      "height": 876,
+      "unit": "mm"
+    },
+    "playingArea": {
+      "length": 3569,
+      "width": 1778,
+      "unit": "mm"
+    },
+    "cushion": {
+      "height": 37,
+      "unit": "mm"
+    },
+    "baulkLine": {
+      "distanceFromBottom": 737,
+      "unit": "mm"
+    },
+    "dArea": {
+      "radius": 292,
+      "centerFromBottom": 737,
+      "unit": "mm"
+    },
+    "pockets": {
+      "corner": {
+        "width": 87.5,
+        "unit": "mm",
+        "note": "顶袋和底袋"
+      },
+      "middle": {
+        "width": 83,
+        "unit": "mm",
+        "note": "中袋"
+      }
+    },
+    "pocketPositions": [
+      {"id": "top-left", "name": "左上角袋", "x": 0, "y": 0},
+      {"id": "top-right", "name": "右上角袋", "x": 3569, "y": 0},
+      {"id": "middle-top", "name": "上中袋", "x": 1784, "y": 0},
+      {"id": "middle-bottom", "name": "下中袋", "x": 1784, "y": 1778},
+      {"id": "bottom-left", "name": "左下角袋", "x": 0, "y": 1778},
+      {"id": "bottom-right", "name": "右下角袋", "x": 3569, "y": 1778}
+    ]
+  },
+
+  "ball": {
+    "diameter": 52.5,
+    "radius": 26.25,
+    "unit": "mm",
+    "weight": 142,
+    "weightUnit": "g",
+    "material": "酚醛树脂或聚酯树脂"
+  },
+
+  "balls": {
+    "white": {
+      "name": "白球",
+      "displayName": "主球",
+      "color": "#FFFFFF",
+      "role": "cueBall"
+    },
+    "red": {
+      "name": "红球",
+      "displayName": "红球",
+      "color": "#DC143C",
+      "count": 15,
+      "points": 1
+    },
+    "yellow": {
+      "name": "黄球",
+      "displayName": "黄球",
+      "color": "#FFD700",
+      "points": 2
+    },
+    "green": {
+      "name": "绿球",
+      "displayName": "绿球",
+      "color": "#228B22",
+      "points": 3
+    },
+    "brown": {
+      "name": "咖啡球",
+      "displayName": "咖啡球",
+      "color": "#8B4513",
+      "points": 4
+    },
+    "blue": {
+      "name": "蓝球",
+      "displayName": "蓝球",
+      "color": "#4169E1",
+      "points": 5
+    },
+    "pink": {
+      "name": "粉球",
+      "displayName": "粉球",
+      "color": "#FF69B4",
+      "points": 6
+    },
+    "black": {
+      "name": "黑球",
+      "displayName": "黑球",
+      "color": "#000000",
+      "points": 7
+    }
+  },
+
+  "spotPositions": {
+    "black": {"x": 3245, "y": 889, "name": "黑球点", "note": "距离右库324mm"},
+    "pink": {"x": 2514, "y": 889, "name": "粉球点", "note": "黑球和蓝球中点"},
+    "blue": {"x": 1784, "y": 889, "name": "蓝球点", "note": "球桌中心"},
+    "brown": {"x": 737, "y": 889, "name": "咖啡球点", "note": "D区中心"},
+    "green": {"x": 737, "y": 597, "name": "绿球点", "note": "D区上方，半圆边缘"},
+    "yellow": {"x": 737, "y": 1181, "name": "黄球点", "note": "D区下方，半圆边缘"}
+  },
+
+  "aimingMethod": {
+    "name": "角度瞄准法",
+    "description": "根据袋口-目标球-白球的夹角确定瞄准点",
+    "principle": "利用几何关系，通过角度快速判断击球厚薄度",
+
+    "angleData": [
+      {
+        "angle": 0,
+        "cutPoint": 1.0,
+        "thickness": "全厚",
+        "aimPosition": "球心",
+        "contactRatio": "100%",
+        "difficulty": "easy",
+        "description": "正面直球"
+      },
+      {
+        "angle": 15,
+        "cutPoint": 0.966,
+        "thickness": "接近全厚",
+        "aimPosition": "球心稍偏",
+        "contactRatio": "96.6%",
+        "difficulty": "easy"
+      },
+      {
+        "angle": 20,
+        "cutPoint": 0.940,
+        "thickness": "20度切点",
+        "aimPosition": "球心偏移",
+        "contactRatio": "94%",
+        "difficulty": "easy",
+        "note": "常用参考角度"
+      },
+      {
+        "angle": 30,
+        "cutPoint": 0.866,
+        "thickness": "半球",
+        "aimPosition": "目标球边缘",
+        "contactRatio": "86.6%",
+        "difficulty": "medium",
+        "visualGuide": "瞄准目标球边缘（1/2厚度）",
+        "note": "最常用的参考角度"
+      },
+      {
+        "angle": 45,
+        "cutPoint": 0.707,
+        "thickness": "1/4厚度",
+        "aimPosition": "1/4位置",
+        "contactRatio": "70.7%",
+        "difficulty": "medium"
+      },
+      {
+        "angle": 60,
+        "cutPoint": 0.5,
+        "thickness": "薄球",
+        "aimPosition": "较薄位置",
+        "contactRatio": "50%",
+        "difficulty": "hard"
+      },
+      {
+        "angle": 72,
+        "cutPoint": 0.309,
+        "thickness": "极薄",
+        "aimPosition": "极薄位置",
+        "contactRatio": "30.9%",
+        "difficulty": "hard"
+      },
+      {
+        "angle": 90,
+        "cutPoint": 0,
+        "thickness": "理论极限",
+        "aimPosition": "几乎不接触",
+        "contactRatio": "0%",
+        "difficulty": "extreme",
+        "note": "理论值，实际无法进球"
+      }
+    ]
+  },
+
+  "presetScenarios": [
+    {
+      "id": "black-horizontal",
+      "name": "黑球水平线",
+      "description": "黑球在置球点，白球与黑球同一水平线",
+      "balls": {
+        "cueBall": {"x": 1500, "y": 889, "locked": false},
+        "objectBall": {"type": "black", "x": 3245, "y": 889, "locked": true}
+      },
+      "targetPocket": "top-left",
+      "purpose": "练习水平角度判断"
+    },
+    {
+      "id": "brown-green-position",
+      "name": "咖啡球固定，白球在绿球位",
+      "description": "咖啡球在置球点，白球在绿球置球点位置",
+      "balls": {
+        "cueBall": {"x": 737, "y": 597, "locked": false},
+        "objectBall": {"type": "brown", "x": 737, "y": 889, "locked": true}
+      },
+      "targetPocket": "middle-top",
+      "purpose": "练习开球区竖直角度"
+    },
+    {
+      "id": "pink-spot",
+      "name": "粉球置球点",
+      "description": "粉球在置球点，白球可随意摆放",
+      "balls": {
+        "cueBall": {"x": 1500, "y": 1200, "locked": false},
+        "objectBall": {"type": "pink", "x": 2514, "y": 889, "locked": true}
+      },
+      "targetPocket": "middle-top",
+      "purpose": "练习常见粉球角度"
+    },
+    {
+      "id": "blue-center",
+      "name": "蓝球中点",
+      "description": "蓝球在中点，白球在下半台",
+      "balls": {
+        "cueBall": {"x": 1784, "y": 1400, "locked": false},
+        "objectBall": {"type": "blue", "x": 1784, "y": 889, "locked": true}
+      },
+      "targetPocket": "middle-top",
+      "purpose": "练习中远台角度"
+    },
+    {
+      "id": "yellow-d-area",
+      "name": "黄球D区",
+      "description": "黄球在D区位置，白球可在开球区移动",
+      "balls": {
+        "cueBall": {"x": 1200, "y": 1041, "locked": false},
+        "objectBall": {"type": "yellow", "x": 737, "y": 1181, "locked": true}
+      },
+      "targetPocket": "middle-top",
+      "purpose": "练习开球区小角度"
+    },
+    {
+      "id": "angle-30",
+      "name": "标准30度角",
+      "description": "预设一个标准30度角场景",
+      "balls": {
+        "cueBall": {"x": 1200, "y": 1300, "locked": false},
+        "objectBall": {"type": "red", "x": 2000, "y": 1000, "locked": true}
+      },
+      "targetPocket": "top-right",
+      "expectedAngle": 30,
+      "purpose": "学习30度瞄准法（半球）"
+    },
+    {
+      "id": "angle-45",
+      "name": "标准45度角",
+      "description": "预设一个标准45度角场景",
+      "balls": {
+        "cueBall": {"x": 1000, "y": 1400, "locked": false},
+        "objectBall": {"type": "red", "x": 2000, "y": 1000, "locked": true}
+      },
+      "targetPocket": "top-right",
+      "expectedAngle": 45,
+      "purpose": "学习45度瞄准法（1/4厚度）"
+    },
+    {
+      "id": "angle-60",
+      "name": "标准60度角",
+      "description": "预设一个标准60度角场景",
+      "balls": {
+        "cueBall": {"x": 800, "y": 1400, "locked": false},
+        "objectBall": {"type": "red", "x": 2000, "y": 1000, "locked": true}
+      },
+      "targetPocket": "top-right",
+      "expectedAngle": 60,
+      "purpose": "学习60度瞄准法（薄球）"
+    }
+  ],
+
+  "visualization": {
+    "colors": {
+      "table": "#1a7a3e",
+      "tableBorder": "#8B4513",
+      "cushion": "#8B4513",
+      "pocket": "#000000",
+      "cueBall": "#FFFFFF",
+      "cueBallBorder": "#CCCCCC",
+      "targetBall": "#FF6B6B",
+      "aimingLine": "#FFFF00",
+      "pocketLine": "#FFA500",
+      "guideLine": "#FF0000",
+      "angleMark": "#00FF00",
+      "aimGuideBackground": "#F5F5F5",
+      "aimGuideBorder": "#CCCCCC",
+      "aimGuideAimLine": "#FF0000",
+      "aimGuideContact": "#90EE90",
+      "aimGuideNonContact": "#FFFFFF"
+    },
+    "lineStyles": {
+      "aimingLine": {"width": 3, "style": "solid", "dash": []},
+      "pocketLine": {"width": 2, "style": "dashed", "dash": [10, 5]},
+      "guideLine": {"width": 2, "style": "solid", "dash": []},
+      "angleLine": {"width": 1, "style": "dashed", "dash": [5, 3]}
+    }
+  },
+
+  "ui": {
+    "defaultSettings": {
+      "showAimingLine": true,
+      "showPocketLine": true,
+      "showAngleLines": true,
+      "showThicknessGuide": true,
+      "showAimGuide": true
+    }
+  },
+
+  "notes": [
+    "所有尺寸基于世界斯诺克协会(WPBSA)标准",
+    "cutPoint = cos(angle)，表示击球接触面积比例",
+    "角度指袋口-目标球连线与目标球-白球连线的夹角",
+    "实际应用需考虑球杆粗细、视角、台面状况等因素微调"
+  ]
+}

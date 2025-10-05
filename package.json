@@ -1,0 +1,21 @@
+{
+  "name": "snooker-aiming-tool",
+  "version": "1.0.0",
+  "description": "斯诺克角度瞄准法学习工具",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "snooker",
+    "billiards",
+    "aiming",
+    "training"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

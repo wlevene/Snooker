@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>斯诺克角度瞄准法工具</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部标题 -->
+        <header class="header">
+            <h1>斯诺克角度瞄准法工具</h1>
+            <p class="subtitle">Snooker Angle Aiming Method</p>
+        </header>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 左侧：球桌Canvas区域 -->
+            <div class="canvas-container">
+                <canvas id="table-canvas"></canvas>
+            </div>
+
+            <!-- 右侧：控制面板 -->
+            <aside class="control-panel">
+                <!-- 当前角度信息 -->
+                <section class="panel-section">
+                    <h3>当前角度信息</h3>
+
+                    <!-- 瞄准示意图 -->
+                    <div class="aim-guide-container">
+                        <canvas id="aim-guide-canvas" width="200" height="200"></canvas>
+                    </div>
+
+                    <!-- 角度数据 -->
+                    <div id="angle-info" class="angle-info">
+                        <div class="info-item">
+                            <span class="label">夹角:</span>
+                            <span class="value">--°</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">瞄准点:</span>
+                            <span class="value">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">厚度:</span>
+                            <span class="value">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">难度:</span>
+                            <span class="value">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 袋口选择 -->
+                <section class="panel-section">
+                    <h3>选择袋口</h3>
+                    <div class="pocket-grid">
+                        <button id="pocket-top-left" class="pocket-btn active">左上</button>
+                        <button id="pocket-top-right" class="pocket-btn">右上</button>
+                        <button id="pocket-middle-top" class="pocket-btn">上中</button>
+                        <button id="pocket-middle-bottom" class="pocket-btn">下中</button>
+                        <button id="pocket-bottom-left" class="pocket-btn">左下</button>
+                        <button id="pocket-bottom-right" class="pocket-btn">右下</button>
+                    </div>
+                </section>
+
+                <!-- 预设场景 -->
+                <section class="panel-section">
+                    <h3>预设场景</h3>
+                    <div class="scenario-list">
+                        <button id="scenario-black-horizontal" class="scenario-btn">黑球水平线</button>
+                        <button id="scenario-brown-green-position" class="scenario-btn">咖啡球&绿球位</button>
+                        <button id="scenario-pink-spot" class="scenario-btn">粉球置球点</button>
+                        <button id="scenario-blue-center" class="scenario-btn">蓝球中点</button>
+                        <button id="scenario-yellow-d-area" class="scenario-btn">黄球D区</button>
+                        <button id="scenario-angle-30" class="scenario-btn">标准30°角</button>
+                        <button id="scenario-angle-45" class="scenario-btn">标准45°角</button>
+                        <button id="scenario-angle-60" class="scenario-btn">标准60°角</button>
+                    </div>
+                </section>
+
+                <!-- 显示选项 -->
+                <section class="panel-section">
+                    <h3>显示选项</h3>
+                    <div class="toggle-list">
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-aiming-line" checked>
+                            <span>显示瞄准线</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-pocket-line" checked>
+                            <span>显示袋口线</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-angle-lines" checked>
+                            <span>显示角度标注</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-thickness-guide" checked>
+                            <span>显示厚度示意</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-guide-line" checked>
+                            <span>显示穿球辅助线</span>
+                        </label>
+                        <label class="toggle-item">
+                            <input type="checkbox" id="toggle-grid">
+                            <span>显示网格(7×4)</span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- 使用说明 -->
+                <section class="panel-section">
+                    <h3>使用说明</h3>
+                    <div class="instructions">
+                        <p>• 拖动白球和目标球调整位置</p>
+                        <p>• 选择不同的袋口查看角度</p>
+                        <p>• 使用预设场景快速学习</p>
+                        <p>• 观察瞄准示意图了解击球点</p>
+                    </div>
+                </section>
+            </aside>
+        </main>
+    </div>
+
+    <script type="module" src="src/main.js"></script>
+</body>
+</html>
