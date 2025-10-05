@@ -158,8 +158,8 @@ class SnookerApp {
    * 渲染场景
    */
   render() {
-    // 1. 渲染球桌（包含网格）
-    this.tableRenderer.render(this.state.showGrid);
+    // 1. 渲染球桌（包含网格和彩球）
+    this.tableRenderer.render(this.state.showGrid, this.state.selectedColoredBalls);
 
     // 2. 渲染辅助线
     if (this.state.showPocketLine || this.state.showAimingLine || this.state.showAngleLines || this.state.showGuideLine) {
@@ -178,7 +178,7 @@ class SnookerApp {
     // 4. 渲染球
     this.ballsRenderer.render(this.state);
 
-    // 5. 渲染袋口标记
+    // 5. 渲染袋口标记和编号（最后绘制，确保在最上层）
     this.tableRenderer.drawPocketMarkers(this.state.selectedPocket.id);
   }
 

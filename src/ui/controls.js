@@ -45,13 +45,16 @@ export class Controls {
       }
     });
 
-    // 预设场景按钮
-    this.state.config.presetScenarios.forEach(scenario => {
-      const btn = document.getElementById(`scenario-${scenario.id}`);
-      if (btn) {
-        this.elements.scenarioButtons.push({ id: scenario.id, element: btn });
-      }
-    });
+    // 彩球选择按钮
+    this.elements.ballButtons = {
+      all: document.getElementById('ball-all'),
+      yellow: document.getElementById('ball-yellow'),
+      green: document.getElementById('ball-green'),
+      brown: document.getElementById('ball-brown'),
+      blue: document.getElementById('ball-blue'),
+      pink: document.getElementById('ball-pink'),
+      black: document.getElementById('ball-black')
+    };
 
     // 显示选项开关
     this.elements.toggleButtons = {
@@ -77,11 +80,13 @@ export class Controls {
       }
     });
 
-    // 预设场景
-    this.elements.scenarioButtons.forEach(({ id, element }) => {
-      if (element) {
-        element.addEventListener('click', () => {
-          this.state.loadScenario(id);
+    // 彩球选择按钮事件
+    Object.entries(this.elements.ballButtons).forEach(([ballType, button]) => {
+      if (button) {
+        button.addEventListener('click', () => {
+          this.state.setSelectedColoredBalls(ballType);
+          // 更新按钮状态
+          this.updateBallButtons(ballType);
         });
       }
     });
@@ -131,6 +136,7 @@ export class Controls {
     this.updateAngleInfo(state);
     this.updatePocketSelection(state);
     this.updateToggles(state);
+    this.updateBallButtons(state.selectedColoredBalls);
   }
 
   /**
@@ -229,5 +235,20 @@ export class Controls {
     if (this.elements.toggleButtons.grid) {
       this.elements.toggleButtons.grid.checked = state.showGrid;
     }
+  }
+
+  /**
+   * 更新彩球选择按钮状态
+   */
+  updateBallButtons(selectedBall) {
+    Object.entries(this.elements.ballButtons).forEach(([ballType, button]) => {
+      if (button) {
+        if (ballType === selectedBall) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
+      }
+    });
   }
 }

@@ -26,7 +26,10 @@ export class State {
     this.showThicknessGuide = config.ui.defaultSettings.showThicknessGuide;
     this.showAimGuide = config.ui.defaultSettings.showAimGuide;
     this.showGuideLine = true; // 默认显示白球穿过目标球的辅助线
-    this.showGrid = false; // 默认不显示网格
+    this.showGrid = true; // 默认显示网格
+
+    // 彩球显示控制
+    this.selectedColoredBalls = 'all'; // 'all' 或具体颜色 'yellow', 'green', 'brown', 'blue', 'pink', 'black'
 
     // 当前选中的预设场景
     this.currentScenario = null;
@@ -138,6 +141,30 @@ export class State {
   }
 
   /**
+   * 设置要显示的彩球
+   * @param {string} ballType - 'all' 或具体颜色 'yellow', 'green', 'brown', 'blue', 'pink', 'black'
+   */
+  setSelectedColoredBalls(ballType) {
+    this.selectedColoredBalls = ballType;
+
+    // 如果选择了特定彩球，将目标球设置为该彩球并移动到置球点
+    if (ballType !== 'all') {
+      const spotPosition = this.config.spotPositions[ballType];
+      if (spotPosition) {
+        this.objectBall.type = ballType;
+        this.objectBall.x = spotPosition.x;
+        this.objectBall.y = spotPosition.y;
+        this.objectBall.locked = true; // 锁定目标球
+      }
+    } else {
+      // 显示全部时，解锁目标球，允许自由移动
+      this.objectBall.locked = false;
+    }
+
+    this.notify();
+  }
+
+  /**
    * 加载预设场景
    */
   loadScenario(scenarioId) {
@@ -225,7 +252,8 @@ export class State {
       showThicknessGuide: this.showThicknessGuide,
       showAimGuide: this.showAimGuide,
       showGuideLine: this.showGuideLine,
-      showGrid: this.showGrid
+      showGrid: this.showGrid,
+      selectedColoredBalls: this.selectedColoredBalls
     };
   }
 }

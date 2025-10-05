@@ -45,19 +45,19 @@ export class AimGuideRenderer {
     ctx.lineWidth = 2;
     ctx.strokeRect(0, 0, width, height);
 
-    // 球的中心位置
+    // 球的中心位置和半径
     const centerX = width / 2;
-    const centerY = height / 2;
-    const radius = Math.min(width, height) * 0.35;
+    const centerY = height * 0.5; // 稍微往上一点，给瞄准线留空间
+    const radius = Math.min(width, height) * 0.28;
 
     // 绘制目标球（俯视图）
     this.drawTargetBall(centerX, centerY, radius);
 
-    // 绘制瞄准线
-    this.drawAimLine(centerX, centerY, radius, angle, aimingData);
-
     // 绘制接触区域
     this.drawContactArea(centerX, centerY, radius, angle, aimingData);
+
+    // 绘制瞄准线（最后绘制，确保在最上层）
+    this.drawAimLine(centerX, centerY, radius, angle, aimingData);
   }
 
   /**
@@ -104,40 +104,78 @@ export class AimGuideRenderer {
   }
 
   /**
-   * 绘制瞄准线（红色竖线）
+   * 绘制瞄准线（红色竖线）和辅助瞄准线
+   *
+   * 原理：
+   * - 假设袋口在正上方（12点方向）
+   * - 白球从下方某个角度打来
+   * - 需要计算假想球（ghost ball）的球心位置
+   * - 假想球球心 = 目标球球心 - 袋口方向 * (2 * 球半径)
+   * - 然后根据角度偏移假想球位置
    */
   drawAimLine(x, y, radius, angle, aimingData) {
     const ctx = this.ctx;
 
-    // 计算瞄准点的位置
-    // 假设袋口在正上方（0度），白球在下方某个角度
-    const cutPoint = aimingData.actualCutPoint || aimingData.cutPoint;
+    // 袋口在正上方（角度为90度，即-π/2弧度）
+    const pocketAngle = -Math.PI / 2;
 
-    // 瞄准点在球上的偏移量（水平方向）
-    // cutPoint = cos(angle)，表示接触点的水平偏移比例
-    const offsetX = radius * (1 - cutPoint);
+    // 角度转弧度
+    const angleRad = angle * Math.PI / 180;
 
-    // 绘制瞄准线（红色竖线）
-    ctx.strokeStyle = this.colors.aimGuideAimLine;
-    ctx.lineWidth = 4;
+    // 计算假想球球心位置
+    // 假想球在袋口反方向，距离为2倍球半径
+    const ghostX = x - Math.cos(pocketAngle) * (2 * radius);
+    const ghostY = y - Math.sin(pocketAngle) * (2 * radius);
+
+    // 根据角度，假想球需要偏移
+    // 使用正弦定理：瞄准点偏移 = 球半径 * sin(角度)
+    const aimOffset = 2 * radius * Math.sin(angleRad);
+
+    // 瞄准点x坐标（向右偏移）
+    const aimX = x + aimOffset;
+
+    const lineTop = 20;
+    const lineBottom = this.canvas.height - 20;
+
+    // 球的直径（用于辅助线间距）
+    const ballDiameter = radius * 2;
+
+    // 绘制左侧辅助线（虚线）
+    const leftAuxX = aimX - ballDiameter;
+    ctx.strokeStyle = '#FF6B6B'; // 稍浅的红色
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]); // 虚线
 
     ctx.beginPath();
-    ctx.moveTo(x + offsetX, y - radius * 1.2);
-    ctx.lineTo(x + offsetX, y + radius * 1.2);
+    ctx.moveTo(leftAuxX, lineTop);
+    ctx.lineTo(leftAuxX, lineBottom);
+    ctx.stroke();
+
+    // 绘制右侧辅助线（虚线）
+    const rightAuxX = aimX + ballDiameter;
+    ctx.beginPath();
+    ctx.moveTo(rightAuxX, lineTop);
+    ctx.lineTo(rightAuxX, lineBottom);
+    ctx.stroke();
+
+    // 绘制主瞄准线（红色实线）
+    ctx.strokeStyle = this.colors.aimGuideAimLine;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([]); // 实线
+
+    ctx.beginPath();
+    ctx.moveTo(aimX, lineTop);
+    ctx.lineTo(aimX, lineBottom);
     ctx.stroke();
 
     // 绘制瞄准点标记（箭头）
-    this.drawArrow(x + offsetX, y - radius * 1.3, 10);
+    this.drawArrow(aimX, lineTop - 5, 12);
 
-    // 绘制cutPoint文本
-    ctx.font = 'bold 12px Arial';
+    // 绘制文本标注
+    ctx.font = 'bold 13px Arial';
     ctx.fillStyle = this.colors.aimGuideAimLine;
     ctx.textAlign = 'center';
-    ctx.fillText(
-      `瞄准点`,
-      x + offsetX,
-      y + radius * 1.5
-    );
+    ctx.fillText('瞄准点', aimX, lineBottom + 15);
   }
 
   /**

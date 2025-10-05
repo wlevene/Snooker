@@ -29,7 +29,7 @@
 
                     <!-- 瞄准示意图 -->
                     <div class="aim-guide-container">
-                        <canvas id="aim-guide-canvas" width="200" height="200"></canvas>
+                        <canvas id="aim-guide-canvas" width="280" height="280"></canvas>
                     </div>
 
                     <!-- 角度数据 -->
@@ -66,18 +66,17 @@
                     </div>
                 </section>
 
-                <!-- 预设场景 -->
+                <!-- 彩球选择 -->
                 <section class="panel-section">
-                    <h3>预设场景</h3>
-                    <div class="scenario-list">
-                        <button id="scenario-black-horizontal" class="scenario-btn">黑球水平线</button>
-                        <button id="scenario-brown-green-position" class="scenario-btn">咖啡球&绿球位</button>
-                        <button id="scenario-pink-spot" class="scenario-btn">粉球置球点</button>
-                        <button id="scenario-blue-center" class="scenario-btn">蓝球中点</button>
-                        <button id="scenario-yellow-d-area" class="scenario-btn">黄球D区</button>
-                        <button id="scenario-angle-30" class="scenario-btn">标准30°角</button>
-                        <button id="scenario-angle-45" class="scenario-btn">标准45°角</button>
-                        <button id="scenario-angle-60" class="scenario-btn">标准60°角</button>
+                    <h3>彩球选择</h3>
+                    <div class="colored-balls-selector">
+                        <button id="ball-all" class="ball-btn ball-all active">显示全部</button>
+                        <button id="ball-yellow" class="ball-btn ball-yellow" style="background-color: #FFD700; color: #000;">黄球</button>
+                        <button id="ball-green" class="ball-btn ball-green" style="background-color: #228B22; color: #FFF;">绿球</button>
+                        <button id="ball-brown" class="ball-btn ball-brown" style="background-color: #8B4513; color: #FFF;">咖啡</button>
+                        <button id="ball-blue" class="ball-btn ball-blue" style="background-color: #4169E1; color: #FFF;">蓝球</button>
+                        <button id="ball-pink" class="ball-btn ball-pink" style="background-color: #FF69B4; color: #FFF;">粉球</button>
+                        <button id="ball-black" class="ball-btn ball-black" style="background-color: #000000; color: #FFF;">黑球</button>
                     </div>
                 </section>
 
@@ -106,8 +105,8 @@
                             <span>显示穿球辅助线</span>
                         </label>
                         <label class="toggle-item">
-                            <input type="checkbox" id="toggle-grid">
-                            <span>显示网格(7×4)</span>
+                            <input type="checkbox" id="toggle-grid" checked>
+                            <span>显示网格(8×4)</span>
                         </label>
                     </div>
                 </section>

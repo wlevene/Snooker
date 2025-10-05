@@ -40,7 +40,7 @@ export class TableRenderer {
   /**
    * 渲染整个球桌
    */
-  render(showGrid = false) {
+  render(showGrid = false, selectedColoredBalls = 'all') {
     const ctx = this.ctx;
     const table = this.config.table;
 
@@ -63,6 +63,11 @@ export class TableRenderer {
 
     // 绘制开球线和D区
     this.drawBaulkLineAndD();
+
+    // 绘制彩球
+    if (selectedColoredBalls) {
+      this.drawColoredBalls(selectedColoredBalls);
+    }
   }
 
   /**
@@ -162,7 +167,7 @@ export class TableRenderer {
   }
 
   /**
-   * 绘制网格辅助线（纵向7等分 × 横向4等分）
+   * 绘制网格辅助线（纵向8等分 × 横向4等分）
    */
   drawGrid() {
     const ctx = this.ctx;
@@ -175,8 +180,8 @@ export class TableRenderer {
     ctx.lineWidth = 1;
     ctx.setLineDash([5, 5]); // 虚线
 
-    // 纵向线（横向7等分）- 分成7份，需要6条线
-    const horizontalSegments = 7;
+    // 纵向线（横向8等分）- 分成8份，需要7条线
+    const horizontalSegments = 8;
     const horizontalStep = tableLength / horizontalSegments;
 
     for (let i = 1; i < horizontalSegments; i++) {
@@ -222,28 +227,130 @@ export class TableRenderer {
   }
 
   /**
-   * 绘制袋口标记（用于选择）
+   * 绘制彩球在置球点位置
+   * @param {string} selectedBalls - 'all' 或具体颜色
+   */
+  drawColoredBalls(selectedBalls = 'all') {
+    const ctx = this.ctx;
+    const spots = this.config.spotPositions;
+    const ballRadius = this.config.ball.radius * this.scale;
+
+    // 定义每个彩球的颜色
+    const ballColors = {
+      yellow: this.config.balls.yellow.color,
+      green: this.config.balls.green.color,
+      brown: this.config.balls.brown.color,
+      blue: this.config.balls.blue.color,
+      pink: this.config.balls.pink.color,
+      black: this.config.balls.black.color
+    };
+
+    // 绘制每个彩球
+    Object.entries(spots).forEach(([ballType, spot]) => {
+      // 如果选择了特定彩球（不是all），则不在置球点绘制该球
+      // 因为目标球已经在那个位置了
+      if (selectedBalls !== 'all') {
+        // 特定彩球模式：不绘制任何置球点上的球
+        return;
+      }
+
+      // 显示全部模式：绘制所有彩球
+      if (selectedBalls === 'all') {
+        const { x, y } = this.toCanvasCoord(spot.x, spot.y);
+        const color = ballColors[ballType];
+
+        // 绘制球体
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+
+        // 绘制球体边框
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 添加高光效果
+        const gradient = ctx.createRadialGradient(
+          x - ballRadius * 0.3,
+          y - ballRadius * 0.3,
+          ballRadius * 0.1,
+          x,
+          y,
+          ballRadius
+        );
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(0.3, 'rgba(255, 255, 255, 0.3)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        ctx.beginPath();
+        ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+      }
+    });
+  }
+
+  /**
+   * 绘制袋口标记（用于选择）和编号
    */
   drawPocketMarkers(selectedPocketId) {
     const ctx = this.ctx;
     const pockets = this.config.table.pocketPositions;
 
+    // 袋口编号映射
+    const pocketLabels = {
+      'top-left': 'A',
+      'middle-top': 'B',
+      'top-right': 'C',
+      'bottom-right': 'D',
+      'middle-bottom': 'E',
+      'bottom-left': 'F'
+    };
+
+    ctx.save();
+
     pockets.forEach(pocket => {
       const { x, y } = this.toCanvasCoord(pocket.x, pocket.y);
       const isSelected = pocket.id === selectedPocketId;
 
-      // 绘制袋口名称
-      ctx.font = '12px Arial';
-      ctx.fillStyle = isSelected ? '#FFD700' : '#FFFFFF';
+      // 根据袋口位置调整文字位置
+      let offsetX = 0, offsetY = 0;
+      if (pocket.id === 'top-left') {
+        offsetX = 35;
+        offsetY = 25;
+      } else if (pocket.id === 'middle-top') {
+        offsetX = 0;
+        offsetY = 30;
+      } else if (pocket.id === 'top-right') {
+        offsetX = -35;
+        offsetY = 25;
+      } else if (pocket.id === 'bottom-right') {
+        offsetX = -35;
+        offsetY = -25;
+      } else if (pocket.id === 'middle-bottom') {
+        offsetX = 0;
+        offsetY = -30;
+      } else if (pocket.id === 'bottom-left') {
+        offsetX = 35;
+        offsetY = -25;
+      }
+
+      const label = pocketLabels[pocket.id];
+
+      // 绘制袋口编号
+      ctx.font = 'bold 20px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
 
-      // 根据袋口位置调整文字位置
-      let offsetX = 0, offsetY = 0;
-      if (pocket.id.includes('top')) offsetY = -20;
-      if (pocket.id.includes('bottom')) offsetY = 20;
-      if (pocket.id.includes('left')) offsetX = 20;
-      if (pocket.id.includes('right')) offsetX = -20;
+      // 描边（黑色）
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 4;
+      ctx.strokeText(label, x + offsetX, y + offsetY);
+
+      // 填充（白色或金色）
+      ctx.fillStyle = isSelected ? '#FFD700' : '#FFFFFF';
+      ctx.fillText(label, x + offsetX, y + offsetY);
 
       // 绘制选中标记
       if (isSelected) {
@@ -254,5 +361,7 @@ export class TableRenderer {
         ctx.stroke();
       }
     });
+
+    ctx.restore();
   }
 }
