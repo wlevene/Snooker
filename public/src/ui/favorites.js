@@ -245,11 +245,63 @@ export class FavoritesManager {
       listContainer.appendChild(exportBtnContainer);
     }
 
-    // 添加收藏项
-    this.favorites.forEach(favorite => {
-      const item = this.createFavoriteItem(favorite);
-      listContainer.appendChild(item);
+    // 按彩球类型分组
+    const groupedFavorites = this.groupFavoritesByBallType();
+
+    // 球类型顺序和中文名称
+    const ballOrder = [
+      { type: 'red', name: '红球', color: '#DC143C' },
+      { type: 'yellow', name: '黄球', color: '#FFD700' },
+      { type: 'green', name: '绿球', color: '#228B22' },
+      { type: 'brown', name: '咖啡球', color: '#8B4513' },
+      { type: 'blue', name: '蓝球', color: '#4169E1' },
+      { type: 'pink', name: '粉球', color: '#FF69B4' },
+      { type: 'black', name: '黑球', color: '#000000' }
+    ];
+
+    // 按顺序渲染每个分组
+    ballOrder.forEach(ball => {
+      const favorites = groupedFavorites[ball.type];
+      if (favorites && favorites.length > 0) {
+        // 创建分组标题
+        const groupTitle = document.createElement('div');
+        groupTitle.style.cssText = `
+          margin: 15px 0 10px 0;
+          padding: 8px 12px;
+          background: linear-gradient(135deg, ${ball.color} 0%, ${ball.color}dd 100%);
+          color: white;
+          border-radius: 6px;
+          font-weight: bold;
+          font-size: 14px;
+          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        `;
+        groupTitle.textContent = `${ball.name} (${favorites.length})`;
+        listContainer.appendChild(groupTitle);
+
+        // 添加该分组的收藏项
+        favorites.forEach(favorite => {
+          const item = this.createFavoriteItem(favorite);
+          listContainer.appendChild(item);
+        });
+      }
     });
+  }
+
+  /**
+   * 按球类型分组收藏
+   */
+  groupFavoritesByBallType() {
+    const groups = {};
+
+    this.favorites.forEach(favorite => {
+      const ballType = favorite.objectBall.type;
+      if (!groups[ballType]) {
+        groups[ballType] = [];
+      }
+      groups[ballType].push(favorite);
+    });
+
+    return groups;
   }
 
   /**
