@@ -75,16 +75,23 @@ body {
 
 /* 球形参考 */
 .ball-reference {
-    background: white;
-    border-top: 2px solid #ddd;
-    padding: 15px 20px;
+    background: #ffffff;
+    border-top: 2px solid #e0e0e0;
+    padding: 0;
+    max-height: 450px;
+    overflow-y: auto;
 }
 
 .ball-reference-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .ball-reference-header h3 {
@@ -110,83 +117,219 @@ body {
 }
 
 .ball-reference-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
+    padding: 15px;
+    background: #f8f9fa;
 }
 
-.reference-item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px;
-    background: #f9f9f9;
-    border-radius: 6px;
-    border: 1px solid #e0e0e0;
-    position: relative;
-    min-width: 140px;
+/* 滚动条样式 */
+.ball-reference::-webkit-scrollbar {
+    width: 6px;
 }
 
-.reference-diagram {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 5px;
-}
-
-.reference-diagram canvas {
-    border: 1px solid #ddd;
+.ball-reference::-webkit-scrollbar-track {
+    background: #e9ecef;
     border-radius: 3px;
-    background: #1a7a3e;
 }
 
-.reference-info {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.ball-reference::-webkit-scrollbar-thumb {
+    background: #adb5bd;
+    border-radius: 3px;
 }
 
-.reference-item input {
-    border: none;
-    background: transparent;
-    font-size: 12px;
-    padding: 4px 6px;
-    width: 100%;
-    text-align: center;
+.ball-reference::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
 }
 
-.reference-item input:focus {
-    outline: 1px solid #667eea;
+/* 球类型分组样式 */
+.ball-type-group {
+    margin-bottom: 18px;
     background: white;
-    border-radius: 3px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-.reference-desc {
-    font-size: 12px;
-    color: #666;
+.ball-type-group:last-child {
+    margin-bottom: 0;
 }
 
-.reference-actions {
+.ball-type-header {
     display: flex;
-    gap: 4px;
-    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 15px;
+    background: white;
+    border-left: 5px solid;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.reference-actions button {
-    padding: 4px 10px;
+.ball-type-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+
+.ball-type-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.ball-type-count {
+    font-size: 11px;
+    color: #7f8c8d;
+    background: #ecf0f1;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+/* 收藏项样式 */
+.favorite-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+    transition: all 0.2s ease;
+}
+
+.favorite-item:last-child {
+    border-bottom: none;
+}
+
+.favorite-item:hover {
+    background: #f5f5f5;
+}
+
+.favorite-thumbnail {
+    flex-shrink: 0;
+    width: 80px;
+    height: 40px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.favorite-thumbnail:hover {
+    transform: scale(1.05);
+}
+
+.favorite-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.favorite-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.favorite-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.favorite-angle {
+    font-size: 11px;
+    color: #7f8c8d;
+    line-height: 1.3;
+}
+
+.favorite-time {
+    font-size: 10px;
+    color: #95a5a6;
+}
+
+.favorite-actions {
+    flex-shrink: 0;
+    display: flex;
+    gap: 6px;
+}
+
+.favorite-actions button {
+    padding: 5px 10px;
     font-size: 11px;
     border: none;
-    border-radius: 3px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
+    font-weight: 500;
 }
 
-.delete-btn {
-    background: #ff6b6b;
+.favorite-load-btn {
+    background: #3498db;
     color: white;
 }
 
-.delete-btn:hover {
-    background: #ff5252;
+.favorite-load-btn:hover {
+    background: #2980b9;
+}
+
+.favorite-delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.favorite-delete-btn:hover {
+    background: #c0392b;
+}
+
+/* 导出按钮样式 */
+.export-btn-container {
+    margin-bottom: 12px;
+}
+
+.export-json-btn {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(39, 174, 96, 0.3);
+}
+
+.export-json-btn:hover {
+    background: linear-gradient(135deg, #229954 0%, #27ae60 100%);
+    box-shadow: 0 3px 8px rgba(39, 174, 96, 0.4);
+}
+
+/* 空状态样式 */
+.favorites-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #adb5bd;
+}
+
+.favorites-empty p {
+    margin: 8px 0;
+}
+
+.favorites-empty p:first-child {
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
 }
 
 /* 控制面板 */
@@ -376,10 +519,6 @@ body {
 
     .canvas-container {
         min-height: 500px;
-    }
-
-    .ball-reference-list {
-        flex-wrap: wrap;
     }
 }
 

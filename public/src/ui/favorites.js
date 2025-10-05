@@ -199,9 +199,9 @@ export class FavoritesManager {
     if (this.favorites.length === 0) {
       console.log('📭 No favorites to display');
       listContainer.innerHTML = `
-        <div style="text-align: center; padding: 20px; color: #999;">
+        <div class="favorites-empty">
           <p>暂无收藏</p>
-          <p style="font-size: 12px;">点击上方"收藏当前球形"按钮添加</p>
+          <p>点击上方"收藏当前球形"按钮添加</p>
         </div>
       `;
       return;
@@ -212,30 +212,11 @@ export class FavoritesManager {
     // 只在本地环境添加导出按钮
     if (this.isLocalEnv) {
       const exportBtnContainer = document.createElement('div');
-      exportBtnContainer.style.cssText = 'margin-bottom: 15px; text-align: center;';
+      exportBtnContainer.className = 'export-btn-container';
 
       const exportBtn = document.createElement('button');
+      exportBtn.className = 'export-json-btn';
       exportBtn.textContent = '📋 复制JSON到剪贴板';
-      exportBtn.style.cssText = `
-        width: 100%;
-        padding: 10px;
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: transform 0.2s;
-      `;
-
-      exportBtn.addEventListener('mouseover', () => {
-        exportBtn.style.transform = 'scale(1.05)';
-      });
-
-      exportBtn.addEventListener('mouseout', () => {
-        exportBtn.style.transform = 'scale(1)';
-      });
 
       exportBtn.addEventListener('click', () => {
         this.showJsonForCopy();
@@ -263,26 +244,42 @@ export class FavoritesManager {
     ballOrder.forEach(ball => {
       const favorites = groupedFavorites[ball.type];
       if (favorites && favorites.length > 0) {
+        // 创建分组容器
+        const groupContainer = document.createElement('div');
+        groupContainer.className = 'ball-type-group';
+
         // 创建分组标题
-        const groupTitle = document.createElement('div');
-        groupTitle.style.cssText = `
-          margin: 15px 0 10px 0;
-          padding: 8px 12px;
-          background: linear-gradient(135deg, ${ball.color} 0%, ${ball.color}dd 100%);
-          color: white;
-          border-radius: 6px;
-          font-weight: bold;
-          font-size: 14px;
-          text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        `;
-        groupTitle.textContent = `${ball.name} (${favorites.length})`;
-        listContainer.appendChild(groupTitle);
+        const groupHeader = document.createElement('div');
+        groupHeader.className = 'ball-type-header';
+        groupHeader.style.borderLeftColor = ball.color;
+
+        // 球型图标
+        const ballIcon = document.createElement('div');
+        ballIcon.className = 'ball-type-icon';
+        ballIcon.style.backgroundColor = ball.color;
+
+        // 标题文字
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'ball-type-title';
+        titleSpan.textContent = ball.name;
+
+        // 数量标签
+        const countSpan = document.createElement('span');
+        countSpan.className = 'ball-type-count';
+        countSpan.textContent = favorites.length;
+
+        groupHeader.appendChild(ballIcon);
+        groupHeader.appendChild(titleSpan);
+        groupHeader.appendChild(countSpan);
+        groupContainer.appendChild(groupHeader);
 
         // 添加该分组的收藏项
         favorites.forEach(favorite => {
           const item = this.createFavoriteItem(favorite);
-          listContainer.appendChild(item);
+          groupContainer.appendChild(item);
         });
+
+        listContainer.appendChild(groupContainer);
       }
     });
   }
@@ -310,49 +307,32 @@ export class FavoritesManager {
   createFavoriteItem(favorite) {
     const item = document.createElement('div');
     item.className = 'favorite-item';
-    item.style.cssText = `
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-      transition: box-shadow 0.2s;
-    `;
 
-    item.addEventListener('mouseover', () => {
-      item.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)';
-    });
+    // 缩略图容器
+    const thumbnailContainer = document.createElement('div');
+    thumbnailContainer.className = 'favorite-thumbnail';
+    thumbnailContainer.addEventListener('click', () => this.restoreFavorite(favorite));
 
-    item.addEventListener('mouseout', () => {
-      item.style.boxShadow = 'none';
-    });
-
-    // 缩略图
     const thumbnail = document.createElement('img');
     thumbnail.src = favorite.thumbnail;
-    thumbnail.style.cssText = `
-      width: 100%;
-      height: auto;
-      border-radius: 4px;
-      margin-bottom: 8px;
-      cursor: pointer;
-    `;
-    thumbnail.addEventListener('click', () => this.restoreFavorite(favorite));
+    thumbnail.alt = favorite.name;
+
+    thumbnailContainer.appendChild(thumbnail);
 
     // 信息区域
     const info = document.createElement('div');
-    info.style.cssText = 'margin-bottom: 8px;';
+    info.className = 'favorite-info';
 
     const nameEl = document.createElement('div');
-    nameEl.style.cssText = 'font-weight: bold; font-size: 14px; margin-bottom: 4px;';
+    nameEl.className = 'favorite-name';
     nameEl.textContent = favorite.name;
 
     const angleEl = document.createElement('div');
-    angleEl.style.cssText = 'font-size: 12px; color: #666;';
+    angleEl.className = 'favorite-angle';
     angleEl.textContent = `角度: ${favorite.angleInfo.angle}° | ${favorite.angleInfo.thickness}`;
 
     const timeEl = document.createElement('div');
-    timeEl.style.cssText = 'font-size: 11px; color: #999; margin-top: 2px;';
+    timeEl.className = 'favorite-time';
     const date = new Date(favorite.timestamp);
     timeEl.textContent = date.toLocaleDateString('zh-CN') + ' ' + date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
 
@@ -362,40 +342,22 @@ export class FavoritesManager {
 
     // 按钮区域
     const actions = document.createElement('div');
-    actions.style.cssText = 'display: flex; gap: 8px;';
+    actions.className = 'favorite-actions';
 
     const loadBtn = document.createElement('button');
+    loadBtn.className = 'favorite-load-btn';
     loadBtn.textContent = '加载';
-    loadBtn.style.cssText = `
-      flex: 1;
-      padding: 6px;
-      background: #4169E1;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-    `;
     loadBtn.addEventListener('click', () => this.restoreFavorite(favorite));
 
     const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'favorite-delete-btn';
     deleteBtn.textContent = '删除';
-    deleteBtn.style.cssText = `
-      flex: 1;
-      padding: 6px;
-      background: #DC143C;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-    `;
     deleteBtn.addEventListener('click', () => this.deleteFavorite(favorite.id));
 
     actions.appendChild(loadBtn);
     actions.appendChild(deleteBtn);
 
-    item.appendChild(thumbnail);
+    item.appendChild(thumbnailContainer);
     item.appendChild(info);
     item.appendChild(actions);
 
