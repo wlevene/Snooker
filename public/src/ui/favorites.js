@@ -32,24 +32,12 @@ export class FavoritesManager {
    * 初始化
    */
   async init() {
+    console.log('🔧 FavoritesManager init started');
     await this.loadFavorites();
     this.setupUI();
-    this.setupTabListener();
-  }
-
-  /**
-   * 设置Tab切换监听
-   */
-  setupTabListener() {
-    document.addEventListener('tabSwitch', (e) => {
-      const listContainer = document.getElementById('ball-reference-list');
-      if (!listContainer) return;
-
-      if (e.detail.tab === 'favorites') {
-        // 切换到收藏tab，显示收藏列表
-        this.renderFavoritesList();
-      }
-    });
+    // 初始化完成后直接渲染收藏列表
+    this.renderFavoritesList();
+    console.log('🔧 FavoritesManager init completed');
   }
 
   /**
@@ -60,8 +48,9 @@ export class FavoritesManager {
       const response = await fetch('/data/favorites.json');
       const data = await response.json();
       this.favorites = data.favorites || [];
+      console.log(`✅ 成功加载 ${this.favorites.length} 个收藏`);
     } catch (error) {
-      console.error('加载收藏失败:', error);
+      console.error('❌ 加载收藏失败:', error);
       this.favorites = [];
     }
   }
@@ -70,7 +59,7 @@ export class FavoritesManager {
    * 设置UI
    */
   setupUI() {
-    // 只在本地环境添加收藏按钮
+    // 只在本地环境添加收藏按钮和导出按钮
     if (this.isLocalEnv) {
       this.addSaveButton();
     }
@@ -197,13 +186,18 @@ export class FavoritesManager {
    * 渲染收藏列表
    */
   renderFavoritesList() {
+    console.log(`🎨 renderFavoritesList called, favorites count: ${this.favorites.length}`);
     // 复用ball-reference-list容器
     const listContainer = document.getElementById('ball-reference-list');
-    if (!listContainer) return;
+    if (!listContainer) {
+      console.log('❌ renderFavoritesList: listContainer not found');
+      return;
+    }
 
     listContainer.innerHTML = '';
 
     if (this.favorites.length === 0) {
+      console.log('📭 No favorites to display');
       listContainer.innerHTML = `
         <div style="text-align: center; padding: 20px; color: #999;">
           <p>暂无收藏</p>
@@ -212,6 +206,8 @@ export class FavoritesManager {
       `;
       return;
     }
+
+    console.log('📋 Rendering favorites list with items:', this.favorites.length);
 
     // 只在本地环境添加导出按钮
     if (this.isLocalEnv) {
@@ -390,7 +386,10 @@ export class FavoritesManager {
       // 重新渲染
       this.renderFavoritesList();
 
-      alert(`✅ 已删除"${deleted.name}"\n\n请点击"导出收藏数据"按钮下载最新的收藏列表。`);
+      // 自动复制最新的JSON到剪贴板
+      this.showJsonForCopy();
+
+      alert(`✅ 已删除"${deleted.name}"\n\n最新的JSON已复制到剪贴板！\n请手动更新 public/data/favorites.json 文件。`);
     }
   }
 
