@@ -16,9 +16,22 @@
 
         <!-- 主内容区域 -->
         <main class="main-content">
-            <!-- 左侧：球桌Canvas区域 -->
-            <div class="canvas-container">
-                <canvas id="table-canvas"></canvas>
+            <!-- 左侧：球桌Canvas区域和角度参考 -->
+            <div class="left-panel">
+                <div class="canvas-container">
+                    <canvas id="table-canvas"></canvas>
+                </div>
+
+                <!-- 常用球形参考 -->
+                <div class="ball-reference">
+                    <div class="ball-reference-header">
+                        <h3>常用球形参考</h3>
+                        <button id="add-reference-btn" class="add-reference-btn">+ 添加</button>
+                    </div>
+                    <div id="ball-reference-list" class="ball-reference-list">
+                        <!-- 动态生成的球形参考项 -->
+                    </div>
+                </div>
             </div>
 
             <!-- 右侧：控制面板 -->
@@ -74,7 +87,8 @@
                 <section class="panel-section">
                     <h3>彩球选择</h3>
                     <div class="colored-balls-selector">
-                        <button id="ball-all" class="ball-btn ball-all active">显示全部</button>
+                        <button id="ball-all" class="ball-btn ball-all">显示全部</button>
+                        <button id="ball-red" class="ball-btn ball-red" style="background-color: #DC143C; color: #FFF;">红球</button>
                         <button id="ball-yellow" class="ball-btn ball-yellow" style="background-color: #FFD700; color: #000;">黄球</button>
                         <button id="ball-green" class="ball-btn ball-green" style="background-color: #228B22; color: #FFF;">绿球</button>
                         <button id="ball-brown" class="ball-btn ball-brown" style="background-color: #8B4513; color: #FFF;">咖啡</button>

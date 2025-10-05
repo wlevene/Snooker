@@ -48,6 +48,7 @@ export class Controls {
     // 彩球选择按钮
     this.elements.ballButtons = {
       all: document.getElementById('ball-all'),
+      red: document.getElementById('ball-red'),
       yellow: document.getElementById('ball-yellow'),
       green: document.getElementById('ball-green'),
       brown: document.getElementById('ball-brown'),

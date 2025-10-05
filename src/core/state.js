@@ -142,19 +142,33 @@ export class State {
 
   /**
    * 设置要显示的彩球
-   * @param {string} ballType - 'all' 或具体颜色 'yellow', 'green', 'brown', 'blue', 'pink', 'black'
+   * @param {string} ballType - 'all', 'red' 或具体颜色 'yellow', 'green', 'brown', 'blue', 'pink', 'black'
    */
   setSelectedColoredBalls(ballType) {
     this.selectedColoredBalls = ballType;
 
+    // 如果选择了红球，随机生成位置
+    if (ballType === 'red') {
+      this.objectBall.type = 'red';
+      // 生成随机位置（避开开球区和边界）
+      const margin = 200; // 距离边界的最小距离
+      const tableLength = this.config.table.playingArea.length;
+      const tableWidth = this.config.table.playingArea.width;
+      const baulkLine = this.config.table.baulkLine.distanceFromBottom;
+
+      // 在开球线右侧随机生成位置
+      this.objectBall.x = baulkLine + margin + Math.random() * (tableLength - baulkLine - margin * 2);
+      this.objectBall.y = margin + Math.random() * (tableWidth - margin * 2);
+      this.objectBall.locked = false; // 红球可以拖动
+    }
     // 如果选择了特定彩球，将目标球设置为该彩球并移动到置球点
-    if (ballType !== 'all') {
+    else if (ballType !== 'all') {
       const spotPosition = this.config.spotPositions[ballType];
       if (spotPosition) {
         this.objectBall.type = ballType;
         this.objectBall.x = spotPosition.x;
         this.objectBall.y = spotPosition.y;
-        this.objectBall.locked = true; // 锁定目标球
+        this.objectBall.locked = true; // 彩球锁定
       }
     } else {
       // 显示全部时，解锁目标球，允许自由移动

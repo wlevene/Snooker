@@ -10,6 +10,7 @@ import { LinesRenderer } from './renderer/lines.js';
 import { AimGuideRenderer } from './renderer/aimGuide.js';
 import { Interaction } from './ui/interaction.js';
 import { Controls } from './ui/controls.js';
+import { BallReferenceManager } from './ui/ballReference.js';
 
 class SnookerApp {
   constructor() {
@@ -28,6 +29,7 @@ class SnookerApp {
     // UI组件
     this.interaction = null;
     this.controls = null;
+    this.ballReferenceManager = null;
 
     this.init();
   }
@@ -106,8 +108,8 @@ class SnookerApp {
    */
   calculateScale() {
     const canvasContainer = document.querySelector('.canvas-container');
-    const containerWidth = canvasContainer.clientWidth - 40; // 减去padding
-    const containerHeight = canvasContainer.clientHeight - 40;
+    const containerWidth = canvasContainer.clientWidth - 20; // 减去padding
+    const containerHeight = canvasContainer.clientHeight - 20;
 
     const tableLength = this.config.table.playingArea.length;
     const tableWidth = this.config.table.playingArea.width;
@@ -147,6 +149,9 @@ class SnookerApp {
 
     // 初始化控制面板
     this.controls = new Controls(this.state, this.aimGuideRenderer);
+
+    // 初始化球形参考管理器
+    this.ballReferenceManager = new BallReferenceManager();
 
     // 监听状态变化，触发重新渲染
     this.state.addListener(() => {
