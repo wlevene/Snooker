@@ -14,7 +14,18 @@ export class FavoritesManager {
     this.favorites = [];
     this.deletePassword = 'delete';
 
+    // 检测是否为本地环境
+    this.isLocalEnv = this.detectLocalEnvironment();
+
     this.init();
+  }
+
+  /**
+   * 检测是否为本地环境
+   */
+  detectLocalEnvironment() {
+    const hostname = window.location.hostname;
+    return hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '';
   }
 
   /**
@@ -59,8 +70,10 @@ export class FavoritesManager {
    * 设置UI
    */
   setupUI() {
-    // 在"当前角度信息"区域添加收藏按钮
-    this.addSaveButton();
+    // 只在本地环境添加收藏按钮
+    if (this.isLocalEnv) {
+      this.addSaveButton();
+    }
   }
 
   /**
@@ -154,8 +167,8 @@ export class FavoritesManager {
     // 重新渲染列表
     this.renderFavoritesList();
 
-    // 提示用户
-    alert(`✅ 收藏成功！\n\n已保存"${name}"到收藏列表。\n\n请点击"导出收藏数据"按钮下载完整的收藏列表。`);
+    // 显示JSON供复制
+    this.showJsonForCopy();
   }
 
   /**
@@ -200,40 +213,41 @@ export class FavoritesManager {
       return;
     }
 
-    // 添加导出按钮
-    const exportBtnContainer = document.createElement('div');
-    exportBtnContainer.style.cssText = 'margin-bottom: 15px; text-align: center;';
+    // 只在本地环境添加导出按钮
+    if (this.isLocalEnv) {
+      const exportBtnContainer = document.createElement('div');
+      exportBtnContainer.style.cssText = 'margin-bottom: 15px; text-align: center;';
 
-    const exportBtn = document.createElement('button');
-    exportBtn.textContent = '📥 导出收藏数据';
-    exportBtn.style.cssText = `
-      width: 100%;
-      padding: 10px;
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s;
-    `;
+      const exportBtn = document.createElement('button');
+      exportBtn.textContent = '📋 复制JSON到剪贴板';
+      exportBtn.style.cssText = `
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s;
+      `;
 
-    exportBtn.addEventListener('mouseover', () => {
-      exportBtn.style.transform = 'scale(1.05)';
-    });
+      exportBtn.addEventListener('mouseover', () => {
+        exportBtn.style.transform = 'scale(1.05)';
+      });
 
-    exportBtn.addEventListener('mouseout', () => {
-      exportBtn.style.transform = 'scale(1)';
-    });
+      exportBtn.addEventListener('mouseout', () => {
+        exportBtn.style.transform = 'scale(1)';
+      });
 
-    exportBtn.addEventListener('click', () => {
-      this.downloadFavoritesFile();
-      alert(`✅ 已导出 ${this.favorites.length} 个收藏！\n\n请将下载的 favorites.json 文件替换到项目的 public/data/ 目录，然后提交到Git仓库。`);
-    });
+      exportBtn.addEventListener('click', () => {
+        this.showJsonForCopy();
+      });
 
-    exportBtnContainer.appendChild(exportBtn);
-    listContainer.appendChild(exportBtnContainer);
+      exportBtnContainer.appendChild(exportBtn);
+      listContainer.appendChild(exportBtnContainer);
+    }
 
     // 添加收藏项
     this.favorites.forEach(favorite => {
@@ -378,6 +392,80 @@ export class FavoritesManager {
 
       alert(`✅ 已删除"${deleted.name}"\n\n请点击"导出收藏数据"按钮下载最新的收藏列表。`);
     }
+  }
+
+  /**
+   * 显示JSON供复制
+   */
+  showJsonForCopy() {
+    const data = {
+      version: '1.0',
+      favorites: this.favorites
+    };
+
+    const jsonStr = JSON.stringify(data, null, 2);
+
+    // 复制到剪贴板
+    navigator.clipboard.writeText(jsonStr).then(() => {
+      alert(`✅ JSON已复制到剪贴板！\n\n请手动替换文件内容：\n1. 打开 public/data/favorites.json\n2. 粘贴剪贴板内容\n3. 保存文件\n4. 刷新页面查看效果\n\n共 ${this.favorites.length} 个收藏`);
+    }).catch(err => {
+      // 如果复制失败，显示文本框让用户手动复制
+      const textarea = document.createElement('textarea');
+      textarea.value = jsonStr;
+      textarea.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 80%;
+        height: 60%;
+        padding: 20px;
+        font-family: monospace;
+        font-size: 12px;
+        z-index: 10000;
+        background: white;
+        border: 2px solid #333;
+        border-radius: 8px;
+      `;
+
+      const overlay = document.createElement('div');
+      overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 9999;
+      `;
+
+      document.body.appendChild(overlay);
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      const closeBtn = document.createElement('button');
+      closeBtn.textContent = '关闭';
+      closeBtn.style.cssText = `
+        position: fixed;
+        top: 10%;
+        right: 12%;
+        padding: 10px 20px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        z-index: 10001;
+      `;
+
+      closeBtn.onclick = () => {
+        document.body.removeChild(overlay);
+        document.body.removeChild(textarea);
+        document.body.removeChild(closeBtn);
+      };
+
+      document.body.appendChild(closeBtn);
+    });
   }
 
   /**
