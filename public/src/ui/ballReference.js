@@ -158,6 +158,15 @@ export class BallReferenceManager {
       const data = localStorage.getItem(this.storageKey);
       if (data) {
         this.references = JSON.parse(data);
+      } else {
+        // 如果没有数据，添加一个示例
+        this.references = [
+          {
+            id: 1,
+            description: '示例：点击"添加"创建您自己的球形参考'
+          }
+        ];
+        this.saveToStorage();
       }
     } catch (error) {
       console.error('加载球形参考数据失败:', error);
