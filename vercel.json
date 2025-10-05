@@ -1,22 +1,19 @@
 {
-  "headers": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/data/(.*)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/json"
-        }
-      ]
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(data|src|styles)/(.*)",
+      "dest": "/$1/$2"
     },
     {
-      "source": "/src/(.*\\.js)",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript"
-        }
-      ]
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
