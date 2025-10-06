@@ -4,6 +4,11 @@
 
 ![](./image.png)
 
+
+体验地址: [https://snooker-tan.vercel.app/](https://snooker-tan.vercel.app/)
+
+
+
 ## 功能特点
 
 ### 核心功能
