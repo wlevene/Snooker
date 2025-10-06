@@ -21,3 +21,4 @@ Thumbs.db
 # Build output (if needed in future)
 dist/
 build/
+.claude
