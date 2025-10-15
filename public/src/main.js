@@ -8,6 +8,7 @@ import { TableRenderer } from './renderer/table.js';
 import { BallsRenderer } from './renderer/balls.js';
 import { LinesRenderer } from './renderer/lines.js';
 import { AimGuideRenderer } from './renderer/aimGuide.js';
+import { PositionCircleRenderer } from './renderer/positionCircle.js';
 import { Interaction } from './ui/interaction.js';
 import { Controls } from './ui/controls.js';
 import { FavoritesManager } from './ui/favorites.js';
@@ -25,6 +26,7 @@ class SnookerApp {
     this.ballsRenderer = null;
     this.linesRenderer = null;
     this.aimGuideRenderer = null;
+    this.positionCircleRenderer = null;
 
     // UI组件
     this.interaction = null;
@@ -128,6 +130,7 @@ class SnookerApp {
     if (this.tableRenderer) this.tableRenderer.setScale(this.scale);
     if (this.ballsRenderer) this.ballsRenderer.setScale(this.scale);
     if (this.linesRenderer) this.linesRenderer.setScale(this.scale);
+    if (this.positionCircleRenderer) this.positionCircleRenderer.setScale(this.scale);
   }
 
   /**
@@ -138,6 +141,7 @@ class SnookerApp {
     this.ballsRenderer = new BallsRenderer(this.ctx, this.config, this.scale);
     this.linesRenderer = new LinesRenderer(this.ctx, this.config, this.scale);
     this.aimGuideRenderer = new AimGuideRenderer(this.config);
+    this.positionCircleRenderer = new PositionCircleRenderer(this.ctx, this.config, this.scale);
   }
 
   /**
@@ -180,10 +184,15 @@ class SnookerApp {
       );
     }
 
-    // 4. 渲染球
+    // 4. 渲染位置参考圆
+    if (this.state.showPositionCircle) {
+      this.positionCircleRenderer.render(this.state);
+    }
+
+    // 5. 渲染球
     this.ballsRenderer.render(this.state);
 
-    // 5. 渲染袋口标记和编号（最后绘制，确保在最上层）
+    // 6. 渲染袋口标记和编号（最后绘制，确保在最上层）
     this.tableRenderer.drawPocketMarkers(this.state.selectedPocket.id);
   }
 

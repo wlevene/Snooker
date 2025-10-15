@@ -27,6 +27,7 @@ export class State {
     this.showAimGuide = config.ui.defaultSettings.showAimGuide;
     this.showGuideLine = true; // 默认显示白球穿过目标球的辅助线
     this.showGrid = true; // 默认显示网格
+    this.showPositionCircle = false; // 默认不显示位置参考圆
 
     // 彩球显示控制 - 默认选中蓝球
     this.selectedColoredBalls = 'blue';
@@ -137,6 +138,11 @@ export class State {
 
   toggleShowGrid() {
     this.showGrid = !this.showGrid;
+    this.notify();
+  }
+
+  toggleShowPositionCircle() {
+    this.showPositionCircle = !this.showPositionCircle;
     this.notify();
   }
 

@@ -64,7 +64,8 @@ export class Controls {
       angleLines: document.getElementById('toggle-angle-lines'),
       thicknessGuide: document.getElementById('toggle-thickness-guide'),
       guideLine: document.getElementById('toggle-guide-line'),
-      grid: document.getElementById('toggle-grid')
+      grid: document.getElementById('toggle-grid'),
+      positionCircle: document.getElementById('toggle-position-circle')
     };
   }
 
@@ -126,6 +127,12 @@ export class Controls {
     if (this.elements.toggleButtons.grid) {
       this.elements.toggleButtons.grid.addEventListener('change', (e) => {
         this.state.toggleShowGrid();
+      });
+    }
+
+    if (this.elements.toggleButtons.positionCircle) {
+      this.elements.toggleButtons.positionCircle.addEventListener('change', (e) => {
+        this.state.toggleShowPositionCircle();
       });
     }
   }
@@ -235,6 +242,9 @@ export class Controls {
     }
     if (this.elements.toggleButtons.grid) {
       this.elements.toggleButtons.grid.checked = state.showGrid;
+    }
+    if (this.elements.toggleButtons.positionCircle) {
+      this.elements.toggleButtons.positionCircle.checked = state.showPositionCircle;
     }
   }
 
